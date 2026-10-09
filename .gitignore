@@ -59,6 +59,7 @@ data/processed/
 # Model checkpoints and trained weights
 # ============================================================
 
+models/
 *.pt
 *.pth
 *.ckpt
