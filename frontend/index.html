@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PulseTraffic AI</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="top-header">
+
+        <div class="header-content">
+
+            <div class="brand">
+
+                <h1>PulseTraffic AI</h1>
+
+                <p>Predict. Prepare. Respond.</p>
+
+            </div>
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                <span>System Ready</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <main class="page-container">
+
+
+        <!-- =================================================
+             TRAFFIC PREDICTION
+        ================================================== -->
+
+        <section class="card prediction-card">
+
+            <h2>Traffic Prediction</h2>
+
+            <p class="section-description">
+                Select the prediction conditions and traffic sensor.
+            </p>
+
+
+            <div class="input-grid">
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="predictionDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="predictionDate"
+                    >
+
+                </div>
+
+
+                <!-- TIME -->
+
+                <div class="form-group">
+
+                    <label for="predictionTime">
+                        Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="predictionTime"
+                    >
+
+                </div>
+
+
+                <!-- REGION -->
+
+                <div class="form-group">
+
+                    <label for="location">
+                        Region
+                    </label>
+
+                    <select id="location">
+
+                        <option value="Alameda">
+                            Alameda
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ROAD -->
+
+                <div class="form-group">
+
+                    <label for="street">
+                        Road / Route
+                    </label>
+
+                    <select id="street">
+                        <option>Loading...</option>
+                    </select>
+
+                </div>
+
+
+                <!-- SENSOR -->
+
+                <div class="form-group">
+
+                    <label for="sensor">
+                        Sensor
+                    </label>
+
+                    <select id="sensor">
+                        <option>Loading...</option>
+                    </select>
+
+                </div>
+
+
+                <!-- INCIDENT -->
+
+                <div class="form-group">
+                    <label>Incident Scenario</label>
+
+                    <label class="checkbox-label">
+                        <input
+                            type="checkbox"
+                            id="incidentEnabled"
+                        >
+                        Enable incident-aware prediction
+                    </label>
+
+                    <div
+                        id="incidentInfoBox"
+                        class="incident-info-box"
+                        style="display: none;"
+                    >
+                        Incident-aware prediction is enabled.
+                        The forecast will include incident impact.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ERROR -->
+
+            <div
+                id="errorMessage"
+                class="error-message"
+            ></div>
+
+
+            <!-- PREDICT BUTTON -->
+
+            <button
+                id="predictButton"
+                class="predict-button"
+            >
+                Predict Traffic
+            </button>
+
+        </section>
+
+
+
+        <!-- =================================================
+             MODEL INFORMATION
+        ================================================== -->
+
+        <section class="card model-card">
+
+            <h2>Model Information</h2>
+
+            <div class="model-grid">
+
+
+                <div class="model-item">
+
+                    <span class="model-label">
+                        Model
+                    </span>
+
+                    <strong id="modelName">
+                        IGSTGNN
+                    </strong>
+
+                </div>
+
+
+                <div class="model-item">
+
+                    <span class="model-label">
+                        Traffic Mode
+                    </span>
+
+                    <strong id="modelMode">
+                        Normal Traffic
+                    </strong>
+
+                </div>
+
+
+                <div class="model-item">
+
+                    <span class="model-label">
+                        Dataset
+                    </span>
+
+                    <strong>
+                        XTraffic
+                    </strong>
+
+                </div>
+
+
+                <div class="model-item">
+
+                    <span class="model-label">
+                        Forecast Horizon
+                    </span>
+
+                    <strong>
+                        60 Minutes
+                    </strong>
+
+                </div>
+
+
+                <div class="model-item">
+
+                    <span class="model-label">
+                        Historical Context
+                    </span>
+
+                    <strong>
+                        12 × 5 min
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             RESULTS
+        ================================================== -->
+
+        <section
+            id="predictionResults"
+            class="card results-card"
+        >
+
+            <div class="results-title">
+
+                <h2>
+                    Traffic Forecast Results
+                </h2>
+
+                <p>
+                    Historical traffic and 60-minute forecast.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 CHARTS
+            ================================================== -->
+
+            <div class="charts-grid">
+
+
+                <!-- PREVIOUS -->
+
+                <div
+                    class="chart-card"
+                    id="previousChartCard"
+                >
+
+                    <div class="chart-heading">
+
+                        <div>
+
+                            <h3>
+                                Previous Sensor
+                            </h3>
+
+                            <p id="previousSensorInfo">
+                                --
+                            </p>
+
+                        </div>
+
+                        <div class="chart-start">
+
+                            <span>
+                                Prediction Start
+                            </span>
+
+                            <strong id="previousPredictionStart">
+                                --
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-wrapper">
+
+                        <canvas
+                            id="previousSensorChart"
+                        ></canvas>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SELECTED -->
+
+                <div
+                    class="chart-card selected-chart-card"
+                    id="selectedChartCard"
+                >
+
+                    <div class="chart-heading">
+
+                        <div>
+
+                            <h3>
+                                Selected Sensor
+                            </h3>
+
+                            <p id="selectedSensorInfo">
+                                --
+                            </p>
+
+                        </div>
+
+                        <div class="chart-start">
+
+                            <span>
+                                Prediction Start
+                            </span>
+
+                            <strong id="selectedPredictionStart">
+                                --
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-wrapper">
+
+                        <canvas
+                            id="selectedSensorChart"
+                        ></canvas>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- NEXT -->
+
+                <div
+                    class="chart-card"
+                    id="nextChartCard"
+                >
+
+                    <div class="chart-heading">
+
+                        <div>
+
+                            <h3>
+                                Next Sensor
+                            </h3>
+
+                            <p id="nextSensorInfo">
+                                --
+                            </p>
+
+                        </div>
+
+                        <div class="chart-start">
+
+                            <span>
+                                Prediction Start
+                            </span>
+
+                            <strong id="nextPredictionStart">
+                                --
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-wrapper">
+
+                        <canvas
+                            id="nextSensorChart"
+                        ></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 LEGEND
+            ================================================== -->
+
+            <div class="chart-legend">
+
+
+                <div class="legend-item">
+
+                    <span class="legend-line historical-line"></span>
+
+                    <span>
+                        Historical Actual (Unaffected by Incident)
+                    </span>
+
+                </div>
+
+
+                <div class="legend-item">
+
+                    <span class="legend-line normal-line"></span>
+
+                    <span>
+                        Forecast (Normal Mode)
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="legend-item"
+                    id="incidentLegend"
+                >
+
+                    <span class="legend-line incident-line"></span>
+
+                    <span>
+                        Forecast (Incident Mode - Affected by Incident)
+                    </span>
+
+                </div>
+
+
+                <div class="legend-item">
+
+                    <span class="boundary-line"></span>
+
+                    <span>
+                        Prediction Start Time
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 BOTTOM
+            ================================================== -->
+
+            <div class="bottom-grid">
+
+
+                <!-- TABLE -->
+
+                <div class="table-section">
+
+                    <h3>
+                        Forecast Values (Selected Sensor)
+                    </h3>
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Step
+                                    </th>
+
+                                    <th>
+                                        Time
+                                    </th>
+
+                                    <th>
+                                        Predicted Traffic
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="forecastTableBody">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- RIGHT-SIDE INFORMATION -->
+
+                <div class="bottom-right-stack">
+
+
+                    <!-- HOW TO INTERPRET -->
+
+                    <div class="interpretation-box">
+
+                        <h3>
+                            How to interpret
+                        </h3>
+
+                        <ul>
+
+                            <li>
+                                <strong>
+                                    Historical graph (blue)
+                                </strong>
+                                shows actual past traffic and is
+                                not affected by the incident.
+                            </li>
+
+                            <li>
+                                When incident mode is enabled,
+                                only the forecast graph of the
+                                selected sensor is shown in
+                                <strong>red</strong>.
+                            </li>
+
+                            <li>
+                                Previous and next sensors provide
+                                surrounding traffic context.
+                            </li>
+
+                            <li>
+                                Use the forecast table for exact
+                                predicted traffic values.
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                    <!-- INCIDENT INFORMATION -->
+
+                    <div
+                        id="incidentResultBox"
+                        class="incident-result-box"
+                    >
+
+                        <div class="incident-icon">
+                            !
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Incident Information
+                            </strong>
+
+                            <p>
+                                The traffic forecast above includes
+                                the incident scenario.
+                            </p>
+
+                            <div class="incident-result-details">
+
+                                <p>
+                                    <strong>
+                                        Incident Type:
+                                    </strong>
+
+                                    <span id="incidentResultType">
+                                        --
+                                    </span>
+                                </p>
+
+                                <p>
+                                    <strong>
+                                        Description:
+                                    </strong>
+
+                                    <span id="incidentResultDescription">
+                                        --
+                                    </span>
+                                </p>
+
+                                <p>
+                                    <strong>
+                                        Holiday:
+                                    </strong>
+
+                                    <span id="incidentResultHoliday">
+                                        --
+                                    </span>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        PulseTraffic AI —
+        AI-Based Road Traffic Prediction for Emergency Service Facilitation
+
+    </footer>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
